@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: fingrow-api
+    runtime: docker
+    plan: free
+    rootDir: backend
+    envVars:
+      - key: DATABASE_URL
+        sync: false # You will need to manually paste this in the Render dashboard
+      - key: SECRET_KEY
+        generateValue: true # Render will automatically generate a secure key for you
+      - key: BACKEND_CORS_ORIGINS
+        sync: false # Set this to your frontend URL in the Render dashboard later
