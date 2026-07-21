@@ -6,10 +6,12 @@ export const getToken = (): string | null => {
 };
 
 export const setToken = (token: string) => {
+  if (typeof window === "undefined") return;
   localStorage.setItem("fingrow_token", token);
 };
 
 export const removeToken = () => {
+  if (typeof window === "undefined") return;
   localStorage.removeItem("fingrow_token");
 };
 
@@ -24,37 +26,69 @@ async function request<T>(
     ...options.headers,
   };
 
-  const res = await fetch(`${API_URL}${path}`, { ...options, headers });
+  try {
+    const res = await fetch(`${API_URL}${path}`, { ...options, headers });
 
-  if (res.status === 401) {
-    removeToken();
-    if (typeof window !== "undefined") {
-      window.location.href = "/login";
+    // Handle expired or invalid token
+    if (res.status === 401) {
+      removeToken();
+      if (typeof window !== "undefined" && !window.location.pathname.includes("/login")) {
+        window.location.href = "/login";
+      }
+      throw new Error("Session expired. Please log in again.");
     }
-    throw new Error("Unauthorized");
-  }
 
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({ detail: res.statusText }));
-    throw new Error(err.detail || "Request failed");
-  }
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({ detail: res.statusText }));
+      throw new Error(err.detail || "Request failed");
+    }
 
-  if (res.status === 204) return {} as T;
-  return res.json();
+    if (res.status === 204) return {} as T;
+    return res.json();
+  } catch (error: any) {
+    throw error;
+  }
 }
 
 // ── Auth ──────────────────────────────────────────────────────────────────────
 export const api = {
   auth: {
-    register: (data: object) =>
-      request("/api/auth/register", { method: "POST", body: JSON.stringify(data) }),
-    login: (data: object) =>
-      request<{ access_token: string }>("/api/auth/login", { method: "POST", body: JSON.stringify(data) }),
+    register: async (data: object) => {
+      const res = await request<{ access_token?: string }>("/api/auth/register", {
+        method: "POST",
+        body: JSON.stringify(data),
+      });
+      if (res.access_token) setToken(res.access_token);
+      return res;
+    },
+
+    login: async (data: any) => {
+      // Handles both JSON payloads and FastAPI OAuth2 Form data formats
+      const res = await request<{ access_token: string }>("/api/auth/login", {
+        method: "POST",
+        body: JSON.stringify(data),
+      });
+      if (res.access_token) {
+        setToken(res.access_token);
+      }
+      return res;
+    },
+
     me: () => request("/api/auth/me"),
+    
+    logout: () => {
+      removeToken();
+      if (typeof window !== "undefined") {
+        window.location.href = "/login";
+      }
+    },
+
     update: (data: object) =>
       request("/api/auth/me", { method: "PUT", body: JSON.stringify(data) }),
+
     changePassword: (data: object) =>
       request("/api/auth/change-password", { method: "POST", body: JSON.stringify(data) }),
+
     deleteAccount: () =>
       request("/api/auth/me", { method: "DELETE" }),
   },
