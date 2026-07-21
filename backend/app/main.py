@@ -10,7 +10,11 @@ from app.routers import auth, income, expenses, goals, investments, habits, chal
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Create all tables on startup (dev mode)
-    await create_tables()
+    try:
+        await create_tables()
+        print("Database tables verified/created successfully.")
+    except Exception as e:
+        print(f"Database initialization error on startup: {e}")
     yield
 
 
@@ -21,10 +25,22 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-# CORS
+# CORS - Add explicit fallback list
+allowed_origins = [
+    "https://financial-habit-builder-and-wealth.vercel.app",
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+]
+
+if hasattr(settings, "FRONTEND_URL") and settings.FRONTEND_URL:
+    # Ensure no trailing slash
+    clean_frontend_url = settings.FRONTEND_URL.rstrip("/")
+    if clean_frontend_url not in allowed_origins:
+        allowed_origins.append(clean_frontend_url)
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[settings.FRONTEND_URL, "http://localhost:3000", "http://127.0.0.1:3000"],
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
