@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy import select, func
 
 from app.core.database import get_db
 from app.core.security import (
@@ -17,14 +17,16 @@ router = APIRouter(prefix="/api/auth", tags=["auth"])
 
 @router.post("/register", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
 async def register(data: UserCreate, db: AsyncSession = Depends(get_db)):
+    clean_email = data.email.lower().strip()
+
     # Check if email already exists
-    result = await db.execute(select(User).where(User.email == data.email))
+    result = await db.execute(select(User).where(func.lower(User.email) == clean_email))
     if result.scalar_one_or_none():
         raise HTTPException(status_code=400, detail="Email already registered")
 
     user = User(
         full_name=data.full_name,
-        email=data.email,
+        email=clean_email,
         hashed_password=get_password_hash(data.password),
     )
     db.add(user)
@@ -40,7 +42,8 @@ async def register(data: UserCreate, db: AsyncSession = Depends(get_db)):
 
 @router.post("/login", response_model=Token)
 async def login(data: UserLogin, db: AsyncSession = Depends(get_db)):
-    result = await db.execute(select(User).where(User.email == data.email))
+    clean_email = data.email.lower().strip()
+    result = await db.execute(select(User).where(func.lower(User.email) == clean_email))
     user = result.scalar_one_or_none()
 
     if not user or not verify_password(data.password, user.hashed_password):
@@ -65,6 +68,8 @@ async def update_profile(
     db: AsyncSession = Depends(get_db),
 ):
     for field, value in data.model_dump(exclude_none=True).items():
+        if field == "email" and value:
+            value = value.lower().strip()
         setattr(current_user, field, value)
     await db.commit()
     await db.refresh(current_user)
