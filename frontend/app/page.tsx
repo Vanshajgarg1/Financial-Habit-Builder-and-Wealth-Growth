@@ -76,14 +76,14 @@ export default function Home() {
               href={user ? "/dashboard" : "/signup"}
               className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-lg py-4 px-8 rounded-xl shadow-lg shadow-emerald-600/10 hover:shadow-emerald-600/25 transition duration-200"
             >
-              Start Free Trial
+              Get Started
               <ArrowRight className="h-5 w-5" />
             </Link>
             <Link
               href="/login"
               className="w-full sm:w-auto inline-flex items-center justify-center bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 font-semibold text-lg py-4 px-8 rounded-xl transition"
             >
-              Explore Demo Account
+              Log In
             </Link>
           </div>
         </div>
@@ -215,13 +215,13 @@ export default function Home() {
 
       {/* Benefits Section */}
       <section className="py-24 px-6 bg-white">
-        <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-12 items-center">
-          <div>
-            <h2 className="text-3xl md:text-4xl font-bold mb-6 text-slate-900">
+        <div className="max-w-6xl mx-auto">
+          <div className="max-w-3xl mx-auto">
+            <h2 className="text-3xl md:text-4xl font-bold mb-8 text-slate-900 text-center">
               Why FinGrow is different from simple trackers
             </h2>
             <div className="space-y-6">
-              <div className="flex gap-4">
+              <div className="flex gap-4 p-6 bg-slate-50 rounded-2xl border border-slate-100">
                 <div className="h-6 w-6 mt-1 text-emerald-600 shrink-0">
                   <ShieldCheck className="h-6 w-6" />
                 </div>
@@ -232,7 +232,7 @@ export default function Home() {
                   </p>
                 </div>
               </div>
-              <div className="flex gap-4">
+              <div className="flex gap-4 p-6 bg-slate-50 rounded-2xl border border-slate-100">
                 <div className="h-6 w-6 mt-1 text-emerald-600 shrink-0">
                   <Calendar className="h-6 w-6" />
                 </div>
@@ -243,38 +243,18 @@ export default function Home() {
                   </p>
                 </div>
               </div>
-              <div className="flex gap-4">
+              <div className="flex gap-4 p-6 bg-slate-50 rounded-2xl border border-slate-100">
                 <div className="h-6 w-6 mt-1 text-emerald-600 shrink-0">
                   <LineChart className="h-6 w-6" />
                 </div>
                 <div>
                   <h4 className="font-bold mb-1">Portfolio & Net Worth Tracking</h4>
                   <p className="text-slate-600 text-sm">
-                    Easily calculate your Net Worth dynamically as: <code className="bg-slate-100 text-xs px-1.5 py-0.5 rounded">Savings + Current Investment Value</code>.
+                    Easily calculate your Net Worth dynamically as: <code className="bg-slate-200 text-xs px-1.5 py-0.5 rounded">Savings + Current Investment Value</code>.
                   </p>
                 </div>
               </div>
             </div>
-          </div>
-          <div className="bg-gradient-to-br from-emerald-600 to-teal-500 rounded-3xl p-12 text-white shadow-2xl relative overflow-hidden">
-            <div className="absolute right-0 top-0 h-40 w-40 bg-white/10 rounded-full blur-2xl" />
-            <h3 className="text-2xl font-bold mb-4">Start your journey today</h3>
-            <p className="text-emerald-50 mb-8 leading-relaxed">
-              Create an account or sign in with our predefined demo credentials to explore realistic mock transactions, savings goals, charts, and habits.
-            </p>
-            <div className="bg-white/10 border border-white/20 p-6 rounded-2xl mb-8">
-              <span className="block text-sm font-medium text-emerald-100 mb-2">Demo Credentials</span>
-              <div className="text-sm font-mono space-y-1">
-                <div>Email: demo@fingrow.app</div>
-                <div>Password: Demo@123</div>
-              </div>
-            </div>
-            <Link
-              href="/login"
-              className="inline-flex items-center justify-center w-full bg-white hover:bg-emerald-50 text-emerald-700 font-semibold py-4 px-6 rounded-xl transition"
-            >
-              Sign In with Demo Account
-            </Link>
           </div>
         </div>
       </section>
@@ -284,7 +264,7 @@ export default function Home() {
         <div className="max-w-4xl mx-auto">
           <h2 className="text-3xl md:text-5xl font-bold mb-6">Ready to improve your financial habits?</h2>
           <p className="text-slate-300 max-w-xl mx-auto mb-10">
-            Sign up now for free. No credit card required. Start managing savings goals, tracking investments, and completing habit cards immediately.
+            Sign up now. Start managing savings goals, tracking investments, and completing habit cards immediately.
           </p>
           <Link
             href="/signup"
